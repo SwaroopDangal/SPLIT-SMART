@@ -1,11 +1,15 @@
-import { SignIn, SignInButton, SignOutButton } from "@clerk/clerk-react";
 import React from "react";
+import Navbar from "./components/NavBar";
+import Sidebar from "./components/Sidebar";
+import Layout from "./components/Layout";
+import Dashboard from "./pages/Dashboard";
 
 const App = () => {
   return (
     <div>
-      <SignInButton mode="modal"></SignInButton>
-      <SignOutButton />
+      <Layout>
+        <Dashboard />
+      </Layout>
     </div>
   );
 };
