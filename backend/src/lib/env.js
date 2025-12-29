@@ -6,4 +6,9 @@ export const ENV = {
   DB_URL: process.env.DB_URL,
   PORT: process.env.PORT,
   NODE_ENV: process.env.NODE_ENV,
+  CLIENT_URL: process.env.CLIENT_URL,
+  INNGEST_EVENT_KEY: process.env.INNGEST_EVENT_KEY,
+  INNGEST_SECRET_KEY: process.env.INNGEST_SECRET_KEY,
+  CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+  CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY,
 };
