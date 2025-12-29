@@ -3,7 +3,7 @@ import { connectDB } from "./db.js";
 import User from "../models/User.js";
 import { ENV } from "./env.js";
 
-export const inngest = new Inngest({ id: ENV.INGEST_APP_ID });
+export const inngest = new Inngest({ id: "split-smart-prod" });
 
 const syncUser = inngest.createFunction(
   { id: "sync-user" },
