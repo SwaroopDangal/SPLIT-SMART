@@ -1,17 +1,22 @@
 import { useState } from "react";
-import { Upload, Users, Camera, X, Image } from "lucide-react";
+import { Upload, Users, Camera, X, Image, LoaderIcon } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createGroup } from "../lib/api";
+import { useNavigate } from "react-router";
+import toast from "react-hot-toast";
 
 const AddGroup = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [groupName, setGroupName] = useState("");
   const [groupPic, setGroupPic] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const { mutate: groupCreationMutation, isPending } = useMutation({
     mutationFn: createGroup,
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success("Group created successfully");
+      navigate(`/group/${data._id}`);
+      queryClient.invalidateQueries(["groups"]);
     },
     onError: (error) => {
       toast.error(error.response.data.message);
@@ -170,7 +175,7 @@ const AddGroup = () => {
                 {isPending ? (
                   <>
                     <LoaderIcon className="animate-spin size-5 mr-2" />
-                    Onboarding...
+                    Creating...
                   </>
                 ) : (
                   <>

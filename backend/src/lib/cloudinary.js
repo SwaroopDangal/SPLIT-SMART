@@ -10,10 +10,16 @@ cloudinary.config({
 export const uploadMedia = async (buffer) => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader
-      .upload_stream({ resource_type: "auto" }, (error, result) => {
-        if (error) reject(error);
-        resolve(result);
-      })
+      .upload_stream(
+        {
+          folder: "groups",
+          resource_type: "image",
+        },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        }
+      )
       .end(buffer);
   });
 };

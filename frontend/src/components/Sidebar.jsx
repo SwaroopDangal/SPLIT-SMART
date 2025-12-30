@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LayoutDashboard, Users, Plus, ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getGroups } from "../lib/api";
 
 export default function Sidebar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
 
   const { data: myGroupData, isLoading } = useQuery({
@@ -14,6 +15,19 @@ export default function Sidebar() {
   });
 
   const [activeSection, setActiveSection] = useState("dashboard");
+
+  // Sync activeSection with current route
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === "/dashboard" || path === "/") {
+      setActiveSection("dashboard");
+    } else if (path.startsWith("/group/")) {
+      const groupId = path.split("/group/")[1];
+      if (groupId && groupId !== "new") {
+        setActiveSection(`group-${groupId}`);
+      }
+    }
+  }, [location.pathname]);
 
   // Function to get random color for groups
   const getGroupColor = (index) => {
@@ -158,18 +172,6 @@ export default function Sidebar() {
           <Plus className="w-4 h-4" />
           <span className="font-medium text-sm">Create New Group</span>
         </button>
-      </div>
-
-      {/* Footer Info */}
-      <div className="p-4 border-t border-base-300">
-        <div className="bg-emerald-50 rounded-lg p-3">
-          <p className="text-xs font-semibold text-emerald-800 mb-1">
-            Quick Tip
-          </p>
-          <p className="text-xs text-emerald-700">
-            Create groups to organize expenses with friends and family!
-          </p>
-        </div>
       </div>
     </div>
   );
