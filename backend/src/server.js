@@ -5,6 +5,7 @@ import { connectDB } from "./lib/db.js";
 import { serve } from "inngest/express";
 import { inngest, functions } from "./lib/inngest.js";
 import { clerkMiddleware } from "@clerk/express";
+import groupRoutes from "../src/routes/group.routes.js";
 
 import cors from "cors";
 
@@ -18,6 +19,7 @@ app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
 app.use(clerkMiddleware()); //this adds req.auth
 
 app.use("/api/inngest", serve({ client: inngest, functions }));
+app.use("/api/group", groupRoutes);
 
 if (ENV.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));

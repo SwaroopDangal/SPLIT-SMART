@@ -1,4 +1,4 @@
-import Group from "../models/Group";
+import Group from "../models/Group.js";
 import { deleteMediaFromCloudinary, uploadMedia } from "../lib/cloudinary.js";
 
 export const createGroup = async (req, res) => {
@@ -26,5 +26,18 @@ export const createGroup = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error creating group" });
+  }
+};
+
+export const getMyGroups = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const groups = await Group.find({
+      $or: [{ admin: userId }, { members: userId }],
+    });
+    return res.status(200).json(groups);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error getting groups" });
   }
 };
