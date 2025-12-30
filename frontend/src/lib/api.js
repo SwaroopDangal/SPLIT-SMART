@@ -18,3 +18,7 @@ export const getGroups = async () => {
   const response = await axiosInstance.get("/group");
   return response.data;
 };
+export const getMyRoleinGroup = async (id) => {
+  const response = await axiosInstance.get(`/group/${id}/role`);
+  return response.data;
+};

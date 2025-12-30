@@ -52,10 +52,11 @@ export const getMyRoleinGroup = async (req, res) => {
     if (!group) {
       return res.status(404).json({ message: "Group not found" });
     }
-
-    const isAdmin = group.admin === userId;
+    console.log(userId, group.admin);
+    const isAdmin = group.admin.equals(userId);
     if (isAdmin) return res.status(200).json({ role: "admin", canEnter: true });
-    const isMember = group.members.includes(userId);
+    const isMember = group.members.some((memberId) => memberId.equals(userId));
+
     if (isMember)
       return res.status(200).json({ role: "member", canEnter: true });
 
