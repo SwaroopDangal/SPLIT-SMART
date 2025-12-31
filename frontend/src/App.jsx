@@ -8,6 +8,7 @@ import toast, { Toaster } from "react-hot-toast";
 
 import { useUser } from "@clerk/clerk-react";
 import GroupDetails from "./pages/GroupDetails";
+import VerificationInvitation from "./pages/VerificationInvitation";
 
 const App = () => {
   const { isSignedIn, isLoaded } = useUser();
@@ -46,6 +47,12 @@ const App = () => {
             ) : (
               <Navigate to="/" />
             )
+          }
+        />
+        <Route
+          path="/group/:groupId/invite/:token"
+          element={
+            isSignedIn ? <VerificationInvitation /> : <Navigate to="/" />
           }
         />
       </Routes>

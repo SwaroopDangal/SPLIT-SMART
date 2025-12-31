@@ -31,3 +31,7 @@ export const createInvitationLink = async (groupId) => {
   const response = await axiosInstance.get(`/group/${groupId}/invite`);
   return response.data;
 };
+export const verifyInvitationLink = async (groupId, token) => {
+  const response = await axiosInstance.get(`/group/${groupId}/invite/${token}`);
+  return response.data;
+};
