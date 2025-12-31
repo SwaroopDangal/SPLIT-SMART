@@ -1,6 +1,8 @@
 import Group from "../models/Group.js";
 import { deleteMediaFromCloudinary, uploadMedia } from "../lib/cloudinary.js";
 import { ENV } from "../lib/env.js";
+import crypto from "crypto";
+import GroupInvite from "../models/GroupInvite.js";
 
 export const createGroup = async (req, res) => {
   try {
@@ -137,5 +139,28 @@ export const verifyInvitationLink = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error verifying invitation link" });
+  }
+};
+
+export const getGroupInfoById = async (req, res) => {
+  const groupId = req.params.id;
+  const userId = req.user._id;
+
+  try {
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+
+    const isMember = group.members.some((memberId) => memberId.equals(userId));
+    const isAdmin = group.admin.equals(userId);
+    if (!isMember && !isAdmin) {
+      return res.status(403).json({ message: "You are not part of group" });
+    }
+
+    return res.status(200).json(group);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error getting group info" });
   }
 };

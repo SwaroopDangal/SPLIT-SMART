@@ -22,3 +22,12 @@ export const getMyRoleinGroup = async (id) => {
   const response = await axiosInstance.get(`/group/${id}/role`);
   return response.data;
 };
+export const getGroupInfoById = async (id) => {
+  const response = await axiosInstance.get(`/group/${id}`);
+  return response.data;
+};
+
+export const createInvitationLink = async (groupId) => {
+  const response = await axiosInstance.get(`/group/${groupId}/invite`);
+  return response.data;
+};
