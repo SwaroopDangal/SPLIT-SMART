@@ -1,5 +1,6 @@
 import Group from "../models/Group.js";
 import { deleteMediaFromCloudinary, uploadMedia } from "../lib/cloudinary.js";
+import { ENV } from "../lib/env.js";
 
 export const createGroup = async (req, res) => {
   try {
@@ -64,5 +65,77 @@ export const getMyRoleinGroup = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error getting group role" });
+  }
+};
+
+export const createInvitationLink = async (req, res) => {
+  const groupId = req.params.groupId;
+  const userId = req.user._id;
+  const token = crypto.randomBytes(32).toString("hex");
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 7);
+
+  try {
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+    const isAdmin = group.admin.equals(userId);
+    if (!isAdmin) {
+      return res.status(403).json({ message: "You are not an admin" });
+    }
+
+    const invite = await GroupInvite.create({
+      groupId,
+      token,
+      expiresAt,
+      createdBy: userId,
+    });
+
+    return res.status(201).json({
+      invitationLink: `${ENV.CLIENT_URL}/group/${groupId}/invite/${invite.token}`,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error creating invitation link" });
+  }
+};
+
+export const verifyInvitationLink = async (req, res) => {
+  const groupId = req.params.groupId;
+  const token = req.params.token;
+  const userId = req.user._id;
+
+  try {
+    const invite = await GroupInvite.findOne({ token });
+    if (!invite) {
+      return res.status(404).json({ message: "Invitation link not found" });
+    }
+    if (invite.expiresAt < new Date()) {
+      return res.status(403).json({ message: "Invitation link expired" });
+    }
+
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+    if (group.admin.equals(userId)) {
+      return res.status(403).json({ message: "You are admin" });
+    }
+    group.members.forEach((memberId) => {
+      if (memberId.equals(userId)) {
+        return res.status(403).json({ message: "You are already a member" });
+      }
+    });
+
+    group.members.push(userId);
+    await group.save();
+
+    return res
+      .status(200)
+      .json({ message: `You are part of group ${group.name}` });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error verifying invitation link" });
   }
 };

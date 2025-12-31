@@ -14,4 +14,8 @@ router.get("/", protectRoute, getMyGroups);
 router.get("/", protectRoute, getMyGroups);
 router.get("/:id/role", protectRoute, getMyRoleinGroup);
 
+router.get("/:groupId/invite", createInvitationLink);
+
+router.get("/:groupId/invite/:token", verifyInvitationLink);
+
 export default router;
