@@ -35,3 +35,12 @@ export const verifyInvitationLink = async (groupId, token) => {
   const response = await axiosInstance.get(`/group/${groupId}/invite/${token}`);
   return response.data;
 };
+export const deleteGroup = async (id) => {
+  const response = await axiosInstance.delete(`/group/${id}`);
+  return response.data;
+};
+
+export const addExpense = async (expense) => {
+  const response = await axiosInstance.post("/expense", expense);
+  return response.data;
+};

@@ -138,7 +138,7 @@ export default function Sidebar() {
                       {group.name}
                     </p>
                     <p className="text-xs text-base-content/60">
-                      {group.members?.length + 1} members
+                      {group.members?.length || 0} members
                     </p>
                   </div>
                 </div>
