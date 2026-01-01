@@ -25,6 +25,7 @@ export const createGroup = async (req, res) => {
       name,
       admin: userId,
       profileImage,
+      members: [userId],
     });
 
     return res.status(201).json(group);
@@ -147,7 +148,7 @@ export const getGroupInfoById = async (req, res) => {
   const userId = req.user._id;
 
   try {
-    const group = await Group.findById(groupId);
+    const group = await Group.findById(groupId).populate("members", "name");
     if (!group) {
       return res.status(404).json({ message: "Group not found" });
     }
@@ -162,5 +163,24 @@ export const getGroupInfoById = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error getting group info" });
+  }
+};
+
+export const deleteGroup = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const groupId = req.params.id;
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+    if (group.admin.equals(userId)) {
+      await Group.findByIdAndDelete(groupId);
+      return res.status(200).json({ message: "Group deleted", success: true });
+    }
+    return res.status(403).json({ message: "You are not an admin" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error deleting group" });
   }
 };
