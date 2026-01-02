@@ -79,6 +79,14 @@ export const createInvitationLink = async (req, res) => {
   expiresAt.setDate(expiresAt.getDate() + 7);
 
   try {
+    const existingInvite = await GroupInvite.findOne({ groupId }).sort({
+      createdAt: -1,
+    });
+    if (existingInvite && existingInvite.expiresAt > new Date()) {
+      return res.status(201).json({
+        invitationLink: `${ENV.CLIENT_URL}/group/${groupId}/invite/${existingInvite.token}`,
+      });
+    }
     const group = await Group.findById(groupId);
     if (!group) {
       return res.status(404).json({ message: "Group not found" });
@@ -174,11 +182,23 @@ export const deleteGroup = async (req, res) => {
     if (!group) {
       return res.status(404).json({ message: "Group not found" });
     }
-    if (group.admin.equals(userId)) {
-      await Group.findByIdAndDelete(groupId);
-      return res.status(200).json({ message: "Group deleted", success: true });
+    if (!group.admin.equals(userId)) {
+      return res.status(403).json({ message: "You are not an admin" });
     }
-    return res.status(403).json({ message: "You are not an admin" });
+    // ✅ 1. Delete group image from Cloudinary
+    if (group?.publicId) {
+      await deleteMediaFromCloudinary(group.profileImage.publicId);
+    }
+    // ✅ 2. Delete related invites
+    await GroupInvite.deleteMany({ groupId });
+
+    // ✅ 3. Delete group
+    await Group.findByIdAndDelete(groupId);
+
+    return res.status(200).json({
+      message: "Group deleted successfully",
+      success: true,
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error deleting group" });
