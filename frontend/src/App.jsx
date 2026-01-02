@@ -35,7 +35,15 @@ const App = () => {
         />
         <Route
           path="/group/new"
-          element={isSignedIn ? <AddGroup /> : <Navigate to="/" />}
+          element={
+            isSignedIn ? (
+              <Layout showSidebar={false}>
+                <AddGroup />
+              </Layout>
+            ) : (
+              <Navigate to="/" />
+            )
+          }
         />
         <Route
           path="/group/:id"

@@ -3,15 +3,17 @@ import NavBar from "./NavBar";
 import Sidebar from "./Sidebar";
 import { Menu, X } from "lucide-react";
 
-const Layout = ({ children, showSidebar = true }) => {
+const Layout = ({ children, showSidebar = true, showNavbar = true }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Navbar - Full Width at Top */}
-      <div className="shadow-md z-20 sticky top-0">
-        <NavBar />
-      </div>
+      {showNavbar && (
+        <div className="shadow-md z-20 sticky top-0">
+          <NavBar />
+        </div>
+      )}
 
       <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
         {/* Desktop Sidebar */}

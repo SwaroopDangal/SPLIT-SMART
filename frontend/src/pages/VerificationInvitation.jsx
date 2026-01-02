@@ -8,7 +8,6 @@ import { Loader2, Link2 } from "lucide-react";
 const VerificationInvitation = () => {
   const { groupId, token } = useParams();
   const Navigate = useNavigate();
-  console.log(groupId, token);
   const { data, isLoading, isError, error, isSuccess } = useQuery({
     queryKey: ["verify-invitation", groupId, token],
     queryFn: () => verifyInvitationLink(groupId, token),

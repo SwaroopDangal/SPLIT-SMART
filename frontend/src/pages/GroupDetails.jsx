@@ -87,7 +87,6 @@ const GroupDetails = () => {
     queryKey: ["group-info", id],
     queryFn: () => getGroupInfoById(id),
   });
-  console.log();
 
   const { data: inviteData, isLoading: isInviteLoading } = useQuery({
     queryKey: ["group-invite", id],
@@ -98,7 +97,6 @@ const GroupDetails = () => {
     mutationKey: ["delete-group", id],
     mutationFn: () => deleteGroup(id),
     onSuccess: (data) => {
-      console.log("onSuccess fired:", data);
       toast.success(data.message);
       queryClient.invalidateQueries({
         queryKey: ["groups"],
