@@ -3,6 +3,7 @@ import { deleteMediaFromCloudinary, uploadMedia } from "../lib/cloudinary.js";
 import { ENV } from "../lib/env.js";
 import crypto from "crypto";
 import GroupInvite from "../models/GroupInvite.js";
+import fs from "fs/promises";
 
 export const createGroup = async (req, res) => {
   try {
@@ -15,10 +16,15 @@ export const createGroup = async (req, res) => {
     }
 
     let profileImage;
+    let publicId;
 
     if (photo) {
-      const uploadResult = await uploadMedia(photo.buffer);
+      const uploadResult = await uploadMedia(photo.path);
       profileImage = uploadResult.secure_url;
+      publicId = uploadResult.public_id;
+
+      // ✅ Delete local file from /uploads
+      await fs.unlink(photo.path);
     }
 
     const group = await Group.create({
@@ -26,6 +32,7 @@ export const createGroup = async (req, res) => {
       admin: userId,
       profileImage,
       members: [userId],
+      publicId,
     });
 
     return res.status(201).json(group);
