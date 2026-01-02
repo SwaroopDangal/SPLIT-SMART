@@ -2,11 +2,12 @@ import Expense from "../models/Expense.js";
 
 export const addExpense = async (req, res) => {
   try {
-    const { description, amount, date, paidBy, splitAmong } = req.body;
+    const { description, amount, date, paidBy, splitAmong, groupId } = req.body;
     const userId = req.user._id;
 
     const expense = await Expense.create({
       description,
+      groupId,
       amount,
       date,
       paidBy,

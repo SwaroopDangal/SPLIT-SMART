@@ -3,8 +3,8 @@ import { addExpense } from "../lib/api";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-const useAddExpense = ({ setShowAddExpenseModal }) => {
-  const { mutate, isLoading } = useMutation({
+const useAddExpense = (setShowAddExpenseModal) => {
+  const { mutate, isPending } = useMutation({
     mutationFn: addExpense,
     onSuccess: (data) => {
       toast.success("Expense added successfully");
@@ -14,7 +14,7 @@ const useAddExpense = ({ setShowAddExpenseModal }) => {
       toast.error(error.response.data.message);
     },
   });
-  return { addExpenseMutation: mutate, isLoading };
+  return { addExpenseMutation: mutate, isPending };
 };
 
 export default useAddExpense;

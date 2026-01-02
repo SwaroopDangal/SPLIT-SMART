@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import useGetAGroupData from "../hooks/useGetAGroupData";
-import { X, DollarSign, UserPlus, Trash2, Percent } from "lucide-react";
+import {
+  X,
+  DollarSign,
+  UserPlus,
+  Trash2,
+  Percent,
+  LoaderIcon,
+} from "lucide-react";
+import useAddExpense from "../hooks/useAddExpense";
 
 const AddExpenseModal = ({ setShowAddExpenseModal, id }) => {
   const [expenseAmount, setExpenseAmount] = useState("");
@@ -14,6 +22,9 @@ const AddExpenseModal = ({ setShowAddExpenseModal, id }) => {
   const [unequalSplits, setUnequalSplits] = useState({});
 
   const { groupData } = useGetAGroupData(id);
+  const { addExpenseMutation, isPending } = useAddExpense(
+    setShowAddExpenseModal
+  );
 
   const addPayer = () => {
     const lastPayer = payers[payers.length - 1];
@@ -141,9 +152,11 @@ const AddExpenseModal = ({ setShowAddExpenseModal, id }) => {
       date: expenseDate,
       paidBy,
       splitAmong: splits,
+      groupId: id,
     };
 
     console.log("Sending payload:", payload);
+    addExpenseMutation(payload);
   };
 
   const allMembersSelected =
@@ -558,6 +571,7 @@ const AddExpenseModal = ({ setShowAddExpenseModal, id }) => {
           </button>
           <button
             disabled={
+              isPending ||
               hasInvalidPayer ||
               (multiplePayers && parseFloat(getRemainingAmount()) !== 0) ||
               (expenseSplitType === "Percentage" &&
@@ -568,7 +582,14 @@ const AddExpenseModal = ({ setShowAddExpenseModal, id }) => {
             onClick={handleAddExpense}
             className="btn bg-emerald-600 hover:bg-emerald-700 text-white flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Add Expense
+            {isPending ? (
+              <>
+                <LoaderIcon className="animate-spin size-5 mr-2" />
+                Adding...
+              </>
+            ) : (
+              "Add Expense"
+            )}
           </button>
         </div>
       </div>
