@@ -23,7 +23,8 @@ const AddExpenseModal = ({ setShowAddExpenseModal, id }) => {
 
   const { groupData } = useGetAGroupData(id);
   const { addExpenseMutation, isPending } = useAddExpense(
-    setShowAddExpenseModal
+    setShowAddExpenseModal,
+    id
   );
 
   const addPayer = () => {
@@ -127,7 +128,7 @@ const AddExpenseModal = ({ setShowAddExpenseModal, id }) => {
       const perPerson = Number(expenseAmount) / groupData.members.length;
 
       splits = groupData.members.map((member) => ({
-        userId: member.id,
+        userId: member._id,
         amount: Number(perPerson.toFixed(2)),
       }));
     }

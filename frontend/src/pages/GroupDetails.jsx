@@ -8,57 +8,44 @@ import useGetAGroupData from "../hooks/useGetAGroupData";
 import InvitationModal from "../components/InvitationModal";
 import DeleteModal from "../components/DeleteModal";
 import AddExpenseModal from "../components/AddExpenseModal";
+import useGetAllExpensesOfAGroup from "../hooks/useGetAllExpensesOfAGroup";
+import LoaderPage from "../components/Loader";
 
 const GroupDetails = () => {
   const [showInviteLinkModal, setShowInviteLinkModal] = useState(false);
   const [showDeleteGroupModal, setShowDeleteGroupModal] = useState(false);
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
 
-  const recentExpenses = [
-    {
-      id: 1,
-      description: "Dinner at Italian Restaurant",
-      amount: 150.0,
-      paidBy: "John Doe",
-      date: "2025-12-29",
-      splitBetween: 4,
-    },
-    {
-      id: 2,
-      description: "Uber to Times Square",
-      amount: 25.5,
-      paidBy: "Sarah Smith",
-      date: "2025-12-28",
-      splitBetween: 3,
-    },
-    {
-      id: 3,
-      description: "Hotel Booking",
-      amount: 450.0,
-      paidBy: "Mike Johnson",
-      date: "2025-12-27",
-      splitBetween: 5,
-    },
-    {
-      id: 4,
-      description: "Broadway Show Tickets",
-      amount: 280.0,
-      paidBy: "John Doe",
-      date: "2025-12-26",
-      splitBetween: 4,
-    },
-  ];
-
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
   const { id } = useParams();
 
   const { myRoleData, isLoading, isAdmin } = useGetMyRoleInGroup(id);
 
   const { groupData, isGroupLoading } = useGetAGroupData(id);
+  let expenseData = [];
+  const { groupExpenseData, isGroupExpenseLoading } =
+    useGetAllExpensesOfAGroup(id);
+
+  groupExpenseData?.map((ge) => {
+    expenseData.push({
+      id: ge?._id,
+      description: ge?.description,
+      amount: ge?.amount,
+
+      paidBy: ge?.paidBy?.map((p) => p.userId?.name).join(", "),
+
+      date: ge?.date?.split("T")[0],
+
+      splitBetween: ge?.splitAmong?.filter((split) => split.amount !== 0)
+        .length,
+      isThisExpenseCreatedByMe: ge?.createdBy == user?.id,
+    });
+  });
 
   if (!isSignedIn) return <Navigate to="/" />;
 
-  if (isLoading || isGroupLoading) return <div>Loading...</div>;
+  if (isLoading || isGroupLoading || isGroupExpenseLoading)
+    return <LoaderPage />;
 
   if (!myRoleData?.canEnter) {
     return <Navigate to="/dashboard" />;
@@ -131,8 +118,8 @@ const GroupDetails = () => {
 
           {/* Expenses List */}
           <div className="space-y-4">
-            {recentExpenses.length > 0 ? (
-              recentExpenses.map((expense) => (
+            {expenseData.length > 0 ? (
+              expenseData.map((expense) => (
                 <div
                   key={expense.id}
                   className="flex items-center justify-between p-4 border-2 border-gray-200 rounded-xl hover:border-emerald-300 hover:shadow-md transition-all"
@@ -169,9 +156,11 @@ const GroupDetails = () => {
                     </div>
                   </div>
 
-                  <button className="ml-4 btn btn-ghost btn-sm btn-circle text-red-500 hover:bg-red-50">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  {expense.isThisExpenseCreatedByMe && (
+                    <button className="ml-4 btn btn-ghost btn-sm btn-circle text-red-500 hover:bg-red-50">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               ))
             ) : (

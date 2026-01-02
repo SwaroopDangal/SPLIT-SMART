@@ -44,3 +44,8 @@ export const addExpense = async (expense) => {
   const response = await axiosInstance.post("/expense", expense);
   return response.data;
 };
+
+export const getAllExpensesOfAGroup = async (id) => {
+  const response = await axiosInstance.get(`/expense/${id}`);
+  return response.data;
+};

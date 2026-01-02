@@ -1,9 +1,10 @@
 import Expense from "../models/Expense.js";
+import Group from "../models/Group.js";
 
 export const addExpense = async (req, res) => {
   try {
     const { description, amount, date, paidBy, splitAmong, groupId } = req.body;
-    const userId = req.user._id;
+    const clerkId = req.user.clerkId;
 
     const expense = await Expense.create({
       description,
@@ -12,12 +13,36 @@ export const addExpense = async (req, res) => {
       date,
       paidBy,
       splitAmong,
-      createdBy: userId,
+      createdBy: clerkId,
     });
 
     return res.status(201).json(expense);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error adding expense" });
+  }
+};
+
+export const getAllExpensesOfAGroup = async (req, res) => {
+  try {
+    const groupId = req.params.id;
+    const userId = req.user._id;
+
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+    if (!group.members.some((memberId) => memberId.equals(userId))) {
+      return res.status(403).json({ message: "You are not part of group" });
+    }
+
+    const expenses = await Expense.find({
+      groupId,
+    }).populate("paidBy", "name");
+
+    return res.status(200).json(expenses);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error getting expenses" });
   }
 };
