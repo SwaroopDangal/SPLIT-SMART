@@ -19,9 +19,12 @@ import {
   User,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import useGetMyRoleInGroup from "../hooks/useGetMyRoleInGroup";
+import useGetAGroupData from "../hooks/useGetAGroupData";
+import useGetInvitationLink from "../hooks/useGetInvitationLink";
+import useDeleteGroup from "../hooks/useDeleteGroup";
 
 const GroupDetails = () => {
-  const navigate = useNavigate();
   const [showInviteLinkModal, setShowInviteLinkModal] = useState(false);
   const [showDeleteGroupModal, setShowDeleteGroupModal] = useState(false);
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
@@ -74,37 +77,15 @@ const GroupDetails = () => {
   ];
 
   const { isSignedIn } = useUser();
-  const queryClient = useQueryClient();
   const { id } = useParams();
 
-  const { data: myRoleData, isLoading } = useQuery({
-    queryKey: ["role-in-group", id],
-    queryFn: () => getMyRoleinGroup(id),
-  });
-  const isAdmin = myRoleData?.role === "admin";
+  const { myRoleData, isLoading, isAdmin } = useGetMyRoleInGroup(id);
 
-  const { data: groupData, isLoading: isGroupLoading } = useQuery({
-    queryKey: ["group-info", id],
-    queryFn: () => getGroupInfoById(id),
-  });
+  const { groupData, isGroupLoading } = useGetAGroupData(id);
 
-  const { data: inviteData, isLoading: isInviteLoading } = useQuery({
-    queryKey: ["group-invite", id],
-    queryFn: () => createInvitationLink(id),
-  });
+  const { inviteData } = useGetInvitationLink(id);
 
-  const { mutate: deleteGroupMutation } = useMutation({
-    mutationKey: ["delete-group", id],
-    mutationFn: () => deleteGroup(id),
-    onSuccess: (data) => {
-      toast.success(data.message);
-      queryClient.invalidateQueries({
-        queryKey: ["groups"],
-      });
-      navigate(`/dashboard`);
-    },
-    onError: (error) => toast.error(error.response.data.message),
-  });
+  const { deleteGroupMutation } = useDeleteGroup(id);
 
   const handleDeleteGroup = () => {
     if (deleteConfirmText === groupData?.name) {

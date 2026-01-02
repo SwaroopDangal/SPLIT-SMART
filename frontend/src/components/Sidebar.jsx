@@ -1,18 +1,13 @@
 import { useState, useEffect } from "react";
 import { LayoutDashboard, Users, Plus, ChevronRight } from "lucide-react";
 import { useNavigate, useLocation } from "react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getGroups } from "../lib/api";
+import useGetGroupsData from "../hooks/useGetGroupsData";
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const queryClient = useQueryClient();
 
-  const { data: myGroupData, isLoading } = useQuery({
-    queryKey: ["groups"],
-    queryFn: getGroups,
-  });
+  const { myGroupData, isLoading } = useGetGroupsData();
 
   const [activeSection, setActiveSection] = useState("dashboard");
 
