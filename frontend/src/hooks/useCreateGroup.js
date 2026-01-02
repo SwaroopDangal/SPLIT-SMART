@@ -2,6 +2,7 @@ import React from "react";
 import { createGroup } from "../lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
+import toast from "react-hot-toast";
 
 const useCreateGroup = () => {
   const queryClient = useQueryClient();
