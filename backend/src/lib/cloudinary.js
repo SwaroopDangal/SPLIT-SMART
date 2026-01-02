@@ -6,27 +6,23 @@ cloudinary.config({
   api_secret: ENV.API_SECRET,
   cloud_name: ENV.CLOUD_NAME,
 });
-
-export const uploadMedia = async (buffer) => {
-  return new Promise((resolve, reject) => {
-    cloudinary.uploader
-      .upload_stream(
-        {
-          folder: "groups",
-          resource_type: "image",
-        },
-        (error, result) => {
-          if (error) return reject(error);
-          resolve(result);
-        }
-      )
-      .end(buffer);
-  });
+export const uploadMedia = async (filePath) => {
+  try {
+    const uploadResponse = await cloudinary.uploader.upload(filePath, {
+      folder: "groups",
+      resource_type: "auto",
+    });
+    return uploadResponse;
+  } catch (error) {
+    console.log(error.message);
+    throw error;
+  }
 };
-
 export const deleteMediaFromCloudinary = async (publicId) => {
   try {
-    await cloudinary.uploader.destroy(publicId);
+    await cloudinary.uploader.destroy(publicId, {
+      resource_type: "image",
+    });
   } catch (error) {
     console.log(error.message);
   }

@@ -63,7 +63,6 @@ export const getMyRoleinGroup = async (req, res) => {
     if (!group) {
       return res.status(404).json({ message: "Group not found" });
     }
-    console.log(userId, group.admin);
     const isAdmin = group.admin.equals(userId);
     if (isAdmin) return res.status(200).json({ role: "admin", canEnter: true });
     const isMember = group.members.some((memberId) => memberId.equals(userId));
@@ -193,8 +192,9 @@ export const deleteGroup = async (req, res) => {
       return res.status(403).json({ message: "You are not an admin" });
     }
     // ✅ 1. Delete group image from Cloudinary
+
     if (group?.publicId) {
-      await deleteMediaFromCloudinary(group.profileImage.publicId);
+      await deleteMediaFromCloudinary(group.publicId);
     }
     // ✅ 2. Delete related invites
     await GroupInvite.deleteMany({ groupId });
