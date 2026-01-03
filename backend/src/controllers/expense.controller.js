@@ -56,7 +56,7 @@ export const deleteExpense = async (req, res) => {
     if (!expense) {
       return res.status(404).json({ message: "Expense not found" });
     }
-    if (!expense.createdBy.equals(userId)) {
+    if (expense.createdBy !== userId) {
       return res.status(403).json({ message: "You are not the creator" });
     }
 
