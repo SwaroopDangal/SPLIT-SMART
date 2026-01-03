@@ -29,8 +29,7 @@ const Dashboard = () => {
             </h1>
 
             <p className="text-gray-600 mb-8 text-lg">
-              Sign in to start splitting expenses with friends and keep track of
-              who owes what.
+              Sign in to start splitting expenses with friends.
             </p>
 
             <SignInButton mode="modal">
@@ -39,12 +38,6 @@ const Dashboard = () => {
                 <ArrowRight className="w-5 h-5 ml-2" />
               </button>
             </SignInButton>
-
-            <div className="mt-8 pt-6 border-t border-gray-200">
-              <p className="text-sm text-gray-500">
-                Split bills, track expenses, and settle up with ease
-              </p>
-            </div>
           </div>
         </div>
       </div>
@@ -53,78 +46,78 @@ const Dashboard = () => {
 
   return (
     <div className="py-6">
-      {/* Welcome Header */}
+      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">
-          Welcome back, {user?.firstName || "there"}! 👋
+          Welcome back, {user?.firstName || "there"} 👋
         </h1>
-        <p className="text-gray-600">Here's your expense summary</p>
+        <p className="text-gray-600">Here’s your expense summary</p>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {/* Total Balance */}
-        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500 hover:shadow-lg transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className="bg-blue-100 p-3 rounded-lg">
-              <DollarSign className="w-6 h-6 text-blue-600" />
-            </div>
+        {/* Net Balance */}
+        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
+          <div className="bg-blue-100 p-3 rounded-lg w-fit mb-4">
+            <DollarSign className="w-6 h-6 text-blue-600" />
           </div>
-          <p className="text-sm font-medium text-gray-600 mb-1">
-            Total Balance
-          </p>
+
+          <p className="text-sm font-medium text-gray-600 mb-1">Net Balance</p>
+
           <p
             className={`text-3xl font-bold ${
-              stats.totalBalance >= 0 ? "text-green-600" : "text-red-600"
+              stats.netBalance >= 0 ? "text-green-600" : "text-red-600"
             }`}
           >
-            ${Math.abs(stats.totalBalance)}
+            ${Math.abs(stats.netBalance)}
           </p>
+
           <p className="text-xs text-gray-500 mt-2">
-            {stats.totalBalance >= 0
-              ? "You are owed overall"
-              : "You owe overall"}
+            {stats.netBalance > 0
+              ? "Overall, people owe you"
+              : stats.netBalance < 0
+              ? "Overall, you owe people"
+              : "All settled"}
           </p>
         </div>
 
-        {/* You Are Owed */}
-        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500 hover:shadow-lg transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className="bg-green-100 p-3 rounded-lg">
-              <TrendingUp className="w-6 h-6 text-green-600" />
-            </div>
+        {/* Total Paid */}
+        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
+          <div className="bg-green-100 p-3 rounded-lg w-fit mb-4">
+            <TrendingUp className="w-6 h-6 text-green-600" />
           </div>
-          <p className="text-sm font-medium text-gray-600 mb-1">You Are Owed</p>
+
+          <p className="text-sm font-medium text-gray-600 mb-1">Total Paid</p>
+
           <p className="text-3xl font-bold text-green-600">
-            ${stats.amountIamOwed}
+            ${stats.totalPaid}
           </p>
-          <p className="text-xs text-gray-500 mt-2">Money coming to you</p>
+
+          <p className="text-xs text-gray-500 mt-2">Money you’ve spent</p>
         </div>
 
-        {/* You Owe */}
-        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-orange-500 hover:shadow-lg transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className="bg-orange-100 p-3 rounded-lg">
-              <TrendingDown className="w-6 h-6 text-orange-600" />
-            </div>
+        {/* Your Share */}
+        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-orange-500">
+          <div className="bg-orange-100 p-3 rounded-lg w-fit mb-4">
+            <TrendingDown className="w-6 h-6 text-orange-600" />
           </div>
-          <p className="text-sm font-medium text-gray-600 mb-1">You Owe</p>
-          <p className="text-3xl font-bold text-orange-600">${stats.amountIowe}</p>
-          <p className="text-xs text-gray-500 mt-2">Money you need to pay</p>
+
+          <p className="text-sm font-medium text-gray-600 mb-1">Your Share</p>
+
+          <p className="text-3xl font-bold text-orange-600">
+            ${stats.totalShare}
+          </p>
+
+          <p className="text-xs text-gray-500 mt-2">Your portion of expenses</p>
         </div>
       </div>
 
-      {/* Recent Activity Section */}
+      {/* Recent Activity */}
       <div className="bg-white rounded-xl shadow-md p-6">
         <h2 className="text-xl font-bold text-gray-800 mb-4">
           Recent Activity
         </h2>
-        <div className="text-center py-8 text-gray-500">
-          <p>No recent activity yet</p>
-          <p className="text-sm mt-2">
-            Start by creating a group or adding an expense!
-          </p>
-        </div>
+        <p className="text-gray-500 text-center py-6">No recent activity yet</p>
       </div>
     </div>
   );

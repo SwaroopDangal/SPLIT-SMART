@@ -1,55 +1,48 @@
+import mongoose from "mongoose";
 import Expense from "../models/Expense.js";
 
 export const getStats = async (req, res) => {
   try {
-    const userId = req.user._id;
-    const result1 = await Expense.aggregate([
+    const userId = new mongoose.Types.ObjectId(req.user._id);
+
+    // 1️⃣ Total amount user PAID (including their own share)
+    const paidResult = await Expense.aggregate([
       { $unwind: "$paidBy" },
       { $match: { "paidBy.userId": userId } },
       {
         $group: {
           _id: null,
-          total: { $sum: "$paidBy.amount" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          total: { $round: ["$total", 2] },
+          totalPaid: { $sum: "$paidBy.amount" },
         },
       },
     ]);
 
-    const amountIamOwed = result1[0]?.total || 0;
+    const totalPaid = paidResult[0]?.totalPaid || 0;
 
-    const result2 = await Expense.aggregate([
+    // 2️⃣ Total amount user SHOULD PAY (their share)
+    const shareResult = await Expense.aggregate([
       { $unwind: "$splitAmong" },
       { $match: { "splitAmong.userId": userId } },
       {
         $group: {
           _id: null,
-          total: { $sum: "$splitAmong.amount" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          total: { $round: ["$total", 2] },
+          totalShare: { $sum: "$splitAmong.amount" },
         },
       },
     ]);
 
-    const amountIowe = result2[0]?.total || 0;
+    const totalShare = shareResult[0]?.totalShare || 0;
 
-    const totalBalance = amountIamOwed - amountIowe;
+    // 3️⃣ Net balance (ONLY truth that matters)
+    const netBalance = (totalPaid - totalShare).toFixed(2);
 
     res.status(200).json({
-      totalBalance,
-      amountIamOwed,
-      amountIowe,
+      netBalance,
+      totalPaid: totalPaid.toFixed(2),
+      totalShare: totalShare.toFixed(2),
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Error getting stats" });
+    res.status(500).json({ message: "Error getting stats" });
   }
 };
