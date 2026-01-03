@@ -225,7 +225,7 @@ export const getGroupExpensesAndSettlements = async (req, res) => {
     if (!group) {
       return res.status(404).json({ message: "Group not found" });
     }
-    if (!group.members.some((memberId) => memberId.equals(userId))) {
+    if (!group.members.some((m) => m._id.equals(userId))) {
       return res.status(403).json({ message: "You are not part of group" });
     }
 
@@ -240,7 +240,7 @@ export const getGroupExpensesAndSettlements = async (req, res) => {
       memberMap.set(member._id.toString(), {
         id: member._id,
         name: member.name,
-        avatar: member.avatar,
+        avatar: member.profileImage,
         totalPaid: 0,
         totalOwed: 0,
       });
@@ -250,11 +250,11 @@ export const getGroupExpensesAndSettlements = async (req, res) => {
       totalExpenses += expense.amount;
 
       expense.paidBy.forEach((paidBy) => {
-        const user = memberMap.get(paidBy.userId.toString());
+        const user = memberMap.get(paidBy.userId._id.toString());
         if (user) user.totalPaid += paidBy.amount;
       });
       expense.splitAmong.forEach((splitAmong) => {
-        const user = memberMap.get(splitAmong.userId.toString());
+        const user = memberMap.get(splitAmong.userId._id.toString());
         if (user) user.totalOwed += splitAmong.amount;
       });
     });
@@ -266,7 +266,7 @@ export const getGroupExpensesAndSettlements = async (req, res) => {
         return {
           ...m,
           balance,
-          status: balance > 0 ? "owed" : "owes",
+          status: balance > 0 ? "owed" : balance < 0 ? "owes" : "settled",
         };
       })
     );
@@ -287,6 +287,7 @@ export const getGroupExpensesAndSettlements = async (req, res) => {
     while (i < debtors.length && j < creditors.length) {
       const debtor = debtors[i];
       const creditor = creditors[j];
+      const amount = Math.min(debtor.balance, creditor.balance);
       settlements.push({
         from: debtor.name,
         to: creditor.name,
