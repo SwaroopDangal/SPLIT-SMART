@@ -57,3 +57,7 @@ export const getStats = async () => {
   const response = await axiosInstance.get("/stats");
   return response.data;
 };
+export const getGroupExpensesAndSettlements = async (id) => {
+  const response = await axiosInstance.get(`/group/${id}/expenses`);
+  return response.data;
+};

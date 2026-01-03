@@ -2,7 +2,16 @@ import { useUser } from "@clerk/clerk-react";
 import React from "react";
 import { Navigate, useParams } from "react-router";
 import { useState } from "react";
-import { Plus, Trash2, Link2, DollarSign, Calendar, User } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  Link2,
+  DollarSign,
+  Calendar,
+  User,
+  Scale,
+  FileText,
+} from "lucide-react";
 import useGetMyRoleInGroup from "../hooks/useGetMyRoleInGroup";
 import useGetAGroupData from "../hooks/useGetAGroupData";
 import InvitationModal from "../components/InvitationModal";
@@ -11,6 +20,7 @@ import AddExpenseModal from "../components/AddExpenseModal";
 import useGetAllExpensesOfAGroup from "../hooks/useGetAllExpensesOfAGroup";
 import LoaderPage from "../components/Loader";
 import DeleteExpenseModal from "../components/DeleteExpenseModal";
+import GroupBalanceModal from "../components/GroupBAlanceModal";
 
 const GroupDetails = () => {
   const [showInviteLinkModal, setShowInviteLinkModal] = useState(false);
@@ -18,6 +28,7 @@ const GroupDetails = () => {
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
   const [showDeleteExpenseModal, setShowDeleteExpenseModal] = useState(false);
   const [expenseId, setExpenseId] = useState("");
+  const [showBalanceModal, setShowBalanceModal] = useState(false);
 
   const { isSignedIn, user } = useUser();
   const { id } = useParams();
@@ -25,7 +36,6 @@ const GroupDetails = () => {
   const { myRoleData, isLoading, isAdmin } = useGetMyRoleInGroup(id);
 
   const { groupData, isGroupLoading } = useGetAGroupData(id);
-  console.log();
   let expenseData = [];
   const { groupExpenseData, isGroupExpenseLoading } =
     useGetAllExpensesOfAGroup(id);
@@ -59,7 +69,7 @@ const GroupDetails = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <div className="bg-linear-to-r from-emerald-600 to-teal-600 shadow-lg">
+      <div className="bg-gradient-to-r from-emerald-600 to-teal-600 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             {/* Left: Group Info */}
@@ -97,24 +107,50 @@ const GroupDetails = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Action Buttons */}
-        {isAdmin && (
-          <div className="flex flex-wrap gap-4 mb-8">
-            <button
-              className="btn btn-outline border-2 border-blue-500 text-blue-600 hover:bg-blue-50 hover:border-blue-600"
-              onClick={() => setShowInviteLinkModal(true)}
-            >
-              <Link2 className="w-4 h-4" />
-              Create Invitation Link
-            </button>
-            <button
-              className="btn btn-outline border-2 border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600"
-              onClick={() => setShowDeleteGroupModal(true)}
-            >
-              <Trash2 className="w-4 h-4" />
-              Delete Group
-            </button>
-          </div>
-        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {/* View Balance Button - Available to all */}
+          <button
+            className="btn btn-outline border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-600 flex items-center justify-center gap-2"
+            onClick={() => {
+              /* Add your view balance logic */
+              setShowBalanceModal(true);
+            }}
+          >
+            <Scale className="w-4 h-4" />
+            View Balance
+          </button>
+
+          {/* Print Summary Button - Available to all */}
+          <button
+            className="btn btn-outline border-2 border-purple-500 text-purple-600 hover:bg-purple-50 hover:border-purple-600 flex items-center justify-center gap-2"
+            onClick={() => {
+              /* Add your print summary logic */
+            }}
+          >
+            <FileText className="w-4 h-4" />
+            Print Summary
+          </button>
+
+          {/* Admin Only Buttons */}
+          {isAdmin && (
+            <>
+              <button
+                className="btn btn-outline border-2 border-blue-500 text-blue-600 hover:bg-blue-50 hover:border-blue-600 flex items-center justify-center gap-2"
+                onClick={() => setShowInviteLinkModal(true)}
+              >
+                <Link2 className="w-4 h-4" />
+                Invite Link
+              </button>
+              <button
+                className="btn btn-outline border-2 border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600 flex items-center justify-center gap-2"
+                onClick={() => setShowDeleteGroupModal(true)}
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete Group
+              </button>
+            </>
+          )}
+        </div>
 
         {/* Recent Expenses Section */}
         <div className="bg-white rounded-2xl shadow-lg p-6">
@@ -218,6 +254,12 @@ const GroupDetails = () => {
           id={expenseId}
         />
       )}
+      {/* Group Balance Modal */}
+      <GroupBalanceModal
+        showModal={showBalanceModal}
+        setShowModal={setShowBalanceModal}
+        id={id}
+      />
     </div>
   );
 };
