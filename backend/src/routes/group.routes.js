@@ -3,6 +3,7 @@ import {
   createGroup,
   createInvitationLink,
   deleteGroup,
+  getGroupExpensesAndSettlements,
   getGroupInfoById,
   getMyGroups,
   getMyRoleinGroup,
@@ -23,5 +24,6 @@ router.get("/:groupId/invite", protectRoute, createInvitationLink);
 
 router.get("/:groupId/invite/:token", protectRoute, verifyInvitationLink);
 router.delete("/:id", protectRoute, deleteGroup);
+router.get("/:id/expenses", protectRoute, getGroupExpensesAndSettlements);
 
 export default router;

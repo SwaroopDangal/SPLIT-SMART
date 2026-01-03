@@ -4,6 +4,7 @@ import { ENV } from "../lib/env.js";
 import crypto from "crypto";
 import GroupInvite from "../models/GroupInvite.js";
 import fs from "fs/promises";
+import Expense from "../models/Expense.js";
 
 export const createGroup = async (req, res) => {
   try {
@@ -209,5 +210,104 @@ export const deleteGroup = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error deleting group" });
+  }
+};
+
+export const getGroupExpensesAndSettlements = async (req, res) => {
+  try {
+    const { groupId } = req.params;
+    const userId = req.user._id;
+
+    const group = await Group.findById(groupId).populate(
+      "members",
+      "name profileImage"
+    );
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+    if (!group.members.some((memberId) => memberId.equals(userId))) {
+      return res.status(403).json({ message: "You are not part of group" });
+    }
+
+    const expenses = await Expense.find({
+      groupId,
+    })
+      .populate("paidBy.userId", "name profileImage")
+      .populate("splitAmong.userId", "name profileImage");
+
+    const memberMap = new Map();
+    group.members.forEach((member) => {
+      memberMap.set(member._id.toString(), {
+        id: member._id,
+        name: member.name,
+        avatar: member.avatar,
+        totalPaid: 0,
+        totalOwed: 0,
+      });
+    });
+    let totalExpenses = 0;
+    expenses.forEach((expense) => {
+      totalExpenses += expense.amount;
+
+      expense.paidBy.forEach((paidBy) => {
+        const user = memberMap.get(paidBy.userId.toString());
+        if (user) user.totalPaid += paidBy.amount;
+      });
+      expense.splitAmong.forEach((splitAmong) => {
+        const user = memberMap.get(splitAmong.userId.toString());
+        if (user) user.totalOwed += splitAmong.amount;
+      });
+    });
+
+    //compute balance and status
+    const members = Array.from(
+      memberMap.values().map((m) => {
+        const balance = m.totalPaid - m.totalOwed;
+        return {
+          ...m,
+          balance,
+          status: balance > 0 ? "owed" : "owes",
+        };
+      })
+    );
+
+    //settlement algorithm
+    const creditors = members
+      .filter((m) => m.balance > 0)
+      .map((m) => ({ ...m }));
+
+    const debtors = members
+      .filter((m) => m.balance < 0)
+      .map((m) => ({ ...m, balance: Math.abs(m.balance) }));
+
+    //generate settlements
+    let settlements = [];
+    let i = 0;
+    let j = 0;
+    while (i < debtors.length && j < creditors.length) {
+      const debtor = debtors[i];
+      const creditor = creditors[j];
+      settlements.push({
+        from: debtor.name,
+        to: creditor.name,
+        amount: +amount.toFixed(2),
+      });
+      debtor.balance -= amount;
+      creditor.balance -= amount;
+
+      if (debtor.balance === 0) i++;
+      if (creditor.balance === 0) j++;
+    }
+
+    const groupBalance = {
+      groupName: group.name,
+      totalExpenses: +totalExpenses.toFixed(2),
+      members,
+      settlements,
+    };
+    return res.status(200).json(groupBalance);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error getting expenses" });
   }
 };
