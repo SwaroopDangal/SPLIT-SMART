@@ -10,11 +10,14 @@ import DeleteModal from "../components/DeleteModal";
 import AddExpenseModal from "../components/AddExpenseModal";
 import useGetAllExpensesOfAGroup from "../hooks/useGetAllExpensesOfAGroup";
 import LoaderPage from "../components/Loader";
+import DeleteExpenseModal from "../components/DeleteExpenseModal";
 
 const GroupDetails = () => {
   const [showInviteLinkModal, setShowInviteLinkModal] = useState(false);
   const [showDeleteGroupModal, setShowDeleteGroupModal] = useState(false);
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
+  const [showDeleteExpenseModal, setShowDeleteExpenseModal] = useState(false);
+  const [expenseId, setExpenseId] = useState("");
 
   const { isSignedIn, user } = useUser();
   const { id } = useParams();
@@ -157,7 +160,13 @@ const GroupDetails = () => {
                   </div>
 
                   {expense.isThisExpenseCreatedByMe && (
-                    <button className="ml-4 btn btn-ghost btn-sm btn-circle text-red-500 hover:bg-red-50">
+                    <button
+                      className="ml-4 btn btn-ghost btn-sm btn-circle text-red-500 hover:bg-red-50"
+                      onClick={() => {
+                        setExpenseId(expense.id);
+                        setShowDeleteExpenseModal(true);
+                      }}
+                    >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   )}
@@ -196,6 +205,14 @@ const GroupDetails = () => {
         <AddExpenseModal
           setShowAddExpenseModal={setShowAddExpenseModal}
           id={id}
+        />
+      )}
+      {/* Delete Expense Modal */}
+      {showDeleteExpenseModal && (
+        <DeleteExpenseModal
+          setShowDeleteExpenseModal={setShowDeleteExpenseModal}
+          groupId={id}
+          id={expenseId}
         />
       )}
     </div>

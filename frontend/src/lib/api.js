@@ -49,3 +49,7 @@ export const getAllExpensesOfAGroup = async (id) => {
   const response = await axiosInstance.get(`/expense/${id}`);
   return response.data;
 };
+export const deleteExpense = async (id) => {
+  const response = await axiosInstance.delete(`/expense/${id}`);
+  return response.data;
+};
