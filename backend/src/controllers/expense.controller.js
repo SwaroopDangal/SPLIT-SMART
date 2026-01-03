@@ -46,3 +46,25 @@ export const getAllExpensesOfAGroup = async (req, res) => {
     return res.status(500).json({ message: "Error getting expenses" });
   }
 };
+
+export const deleteExpense = async (req, res) => {
+  try {
+    const expenseId = req.params.id;
+    const userId = req.user.clerkId;
+
+    const expense = await Expense.findById(expenseId);
+    if (!expense) {
+      return res.status(404).json({ message: "Expense not found" });
+    }
+    if (!expense.createdBy.equals(userId)) {
+      return res.status(403).json({ message: "You are not the creator" });
+    }
+
+    await Expense.findByIdAndDelete(expenseId);
+
+    return res.status(200).json({ message: "Expense deleted" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error deleting expense" });
+  }
+};

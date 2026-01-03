@@ -9,7 +9,7 @@ const InvitationModal = ({ id, setShowInviteLinkModal }) => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-  const { inviteData } = useGetInvitationLink(id);
+  const { inviteData, isInviteLoading } = useGetInvitationLink(id);
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
@@ -34,7 +34,9 @@ const InvitationModal = ({ id, setShowInviteLinkModal }) => {
           <div className="flex items-center gap-2 p-3 bg-gray-100 rounded-lg border-2 border-gray-200 mb-4">
             <input
               type="text"
-              value={inviteData?.invitationLink}
+              value={
+                isInviteLoading ? "Loading..." : inviteData?.invitationLink
+              }
               readOnly
               className="flex-1 bg-transparent text-sm text-gray-700 outline-none"
             />
