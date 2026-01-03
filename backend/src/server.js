@@ -7,6 +7,7 @@ import { inngest, functions } from "./lib/inngest.js";
 import { clerkMiddleware } from "@clerk/express";
 import groupRoutes from "../src/routes/group.routes.js";
 import expenseRoutes from "../src/routes/expense.routes.js";
+import statsRoutes from "../src/routes/stats.routes.js";
 
 import cors from "cors";
 
@@ -21,7 +22,8 @@ app.use(clerkMiddleware()); //this adds req.auth
 
 app.use("/api/inngest", serve({ client: inngest, functions }));
 app.use("/api/group", groupRoutes);
-app.use("/api/expense",expenseRoutes)
+app.use("/api/expense", expenseRoutes);
+app.use("/api/stats", statsRoutes);
 
 if (ENV.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
