@@ -25,9 +25,11 @@ const GroupDetails = () => {
   const { myRoleData, isLoading, isAdmin } = useGetMyRoleInGroup(id);
 
   const { groupData, isGroupLoading } = useGetAGroupData(id);
+  console.log();
   let expenseData = [];
   const { groupExpenseData, isGroupExpenseLoading } =
     useGetAllExpensesOfAGroup(id);
+  console.log(groupExpenseData);
 
   groupExpenseData?.map((ge) => {
     expenseData.push({
@@ -35,7 +37,7 @@ const GroupDetails = () => {
       description: ge?.description,
       amount: ge?.amount,
 
-      paidBy: ge?.paidBy?.map((p) => p.userId?.name).join(", "),
+      paidBy: ge.paidBy.map((p) => p.userId.name).join(", "),
 
       date: ge?.date?.split("T")[0],
 
@@ -74,7 +76,8 @@ const GroupDetails = () => {
                   {groupData?.name}
                 </h1>
                 <p className="text-emerald-100 text-sm">
-                  {groupData?.members.length || 0} members
+                  {groupData?.members.length || 0} members -{" "}
+                  {groupData?.members?.map((m) => m.name).join(", ")}
                 </p>
               </div>
             </div>

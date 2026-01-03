@@ -53,3 +53,7 @@ export const deleteExpense = async (id) => {
   const response = await axiosInstance.delete(`/expense/${id}`);
   return response.data;
 };
+export const getStats = async () => {
+  const response = await axiosInstance.get("/stats");
+  return response.data;
+};

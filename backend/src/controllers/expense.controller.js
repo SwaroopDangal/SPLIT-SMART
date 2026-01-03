@@ -38,7 +38,7 @@ export const getAllExpensesOfAGroup = async (req, res) => {
 
     const expenses = await Expense.find({
       groupId,
-    }).populate("paidBy", "name");
+    }).populate("paidBy.userId", "name");
 
     return res.status(200).json(expenses);
   } catch (error) {

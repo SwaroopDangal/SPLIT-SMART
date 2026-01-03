@@ -6,16 +6,14 @@ import {
   DollarSign,
   ArrowRight,
 } from "lucide-react";
+import useGetStats from "../hooks/useGetStats";
+import LoaderPage from "../components/Loader";
 
 const Dashboard = () => {
   const { isSignedIn, user } = useUser();
+  const { stats, isStatsLoading } = useGetStats();
 
-  // Mock data - replace with real data from your backend
-  const stats = {
-    totalBalance: 125.5,
-    youAreOwed: 450.0,
-    youOwe: 324.5,
-  };
+  if (isStatsLoading) return <LoaderPage />;
 
   if (!isSignedIn) {
     return (
@@ -80,7 +78,7 @@ const Dashboard = () => {
               stats.totalBalance >= 0 ? "text-green-600" : "text-red-600"
             }`}
           >
-            ${Math.abs(stats.totalBalance).toFixed(2)}
+            ${Math.abs(stats.totalBalance)}
           </p>
           <p className="text-xs text-gray-500 mt-2">
             {stats.totalBalance >= 0
@@ -98,7 +96,7 @@ const Dashboard = () => {
           </div>
           <p className="text-sm font-medium text-gray-600 mb-1">You Are Owed</p>
           <p className="text-3xl font-bold text-green-600">
-            ${stats.youAreOwed.toFixed(2)}
+            ${stats.amountIamOwed}
           </p>
           <p className="text-xs text-gray-500 mt-2">Money coming to you</p>
         </div>
@@ -111,9 +109,7 @@ const Dashboard = () => {
             </div>
           </div>
           <p className="text-sm font-medium text-gray-600 mb-1">You Owe</p>
-          <p className="text-3xl font-bold text-orange-600">
-            ${stats.youOwe.toFixed(2)}
-          </p>
+          <p className="text-3xl font-bold text-orange-600">${stats.amountIowe}</p>
           <p className="text-xs text-gray-500 mt-2">Money you need to pay</p>
         </div>
       </div>
