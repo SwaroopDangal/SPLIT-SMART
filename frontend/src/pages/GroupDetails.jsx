@@ -1,7 +1,9 @@
 import { useUser } from "@clerk/clerk-react";
-import React from "react";
+import React, { useRef } from "react";
 import { Navigate, useParams } from "react-router";
 import { useState } from "react";
+import { useReactToPrint } from "react-to-print";
+
 import {
   Plus,
   Trash2,
@@ -21,6 +23,8 @@ import useGetAllExpensesOfAGroup from "../hooks/useGetAllExpensesOfAGroup";
 import LoaderPage from "../components/Loader";
 import DeleteExpenseModal from "../components/DeleteExpenseModal";
 import GroupBalanceModal from "../components/GroupBAlanceModal";
+import PrintableSummary from "../components/PrintableSummary";
+import useGetGroupExpensesAndSettlements from "../hooks/useGetGroupExpensesAndSettlements";
 
 const GroupDetails = () => {
   const [showInviteLinkModal, setShowInviteLinkModal] = useState(false);
@@ -36,6 +40,9 @@ const GroupDetails = () => {
   const { myRoleData, isLoading, isAdmin } = useGetMyRoleInGroup(id);
 
   const { groupData, isGroupLoading } = useGetAGroupData(id);
+  const { groupBalanceData: groupBalance, isGroupBalnceLoading } =
+    useGetGroupExpensesAndSettlements(id);
+  console.log(groupBalance);
   let expenseData = [];
   const { groupExpenseData, isGroupExpenseLoading } =
     useGetAllExpensesOfAGroup(id);
@@ -57,9 +64,21 @@ const GroupDetails = () => {
     });
   });
 
+  const printRef = useRef();
+
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+    documentTitle: `${groupBalance?.groupName}-summary`,
+  });
+
   if (!isSignedIn) return <Navigate to="/" />;
 
-  if (isLoading || isGroupLoading || isGroupExpenseLoading)
+  if (
+    isLoading ||
+    isGroupLoading ||
+    isGroupExpenseLoading ||
+    isGroupBalnceLoading
+  )
     return <LoaderPage />;
 
   if (!myRoleData?.canEnter) {
@@ -123,9 +142,8 @@ const GroupDetails = () => {
           {/* Print Summary Button - Available to all */}
           <button
             className="btn btn-outline border-2 border-purple-500 text-purple-600 hover:bg-purple-50 hover:border-purple-600 flex items-center justify-center gap-2"
-            onClick={() => {
-              /* Add your print summary logic */
-            }}
+            onClick={handlePrint}
+            disabled={isGroupBalnceLoading || !groupBalance}
           >
             <FileText className="w-4 h-4" />
             Print Summary
@@ -260,6 +278,12 @@ const GroupDetails = () => {
         setShowModal={setShowBalanceModal}
         id={id}
       />
+      {/* Printable Summary (must stay mounted) */}
+      {groupBalance && (
+        <div className="hidden">
+          <PrintableSummary ref={printRef} groupBalance={groupBalance} />
+        </div>
+      )}
     </div>
   );
 };

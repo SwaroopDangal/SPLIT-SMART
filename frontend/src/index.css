@@ -1,2 +1,17 @@
 @import "tailwindcss";
 @plugin "daisyui";
+@media print {
+  body {
+    background: white;
+  }
+
+  .btn,
+  .navbar,
+  .drawer {
+    display: none !important;
+  }
+
+  .card {
+    page-break-inside: avoid;
+  }
+}
