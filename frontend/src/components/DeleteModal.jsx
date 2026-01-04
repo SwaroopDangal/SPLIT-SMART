@@ -13,7 +13,7 @@ const DeleteModal = ({ setShowDeleteGroupModal, id }) => {
     }
   };
 
-  const { deleteGroupMutation } = useDeleteGroup(id);
+  const { deleteGroupMutation, isDeleteGroupPending } = useDeleteGroup(id);
   const { groupData } = useGetAGroupData(id);
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -96,11 +96,22 @@ const DeleteModal = ({ setShowDeleteGroupModal, id }) => {
           </button>
           <button
             onClick={handleDeleteGroup}
-            disabled={deleteConfirmText !== groupData?.name}
+            disabled={
+              deleteConfirmText !== groupData?.name || isDeleteGroupPending
+            }
             className="btn bg-red-600 hover:bg-red-700 text-white flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Trash2 className="w-4 h-4" />
-            Delete Permanently
+            {isDeleteGroupPending ? (
+              <>
+                <Loader className="w-4 h-4 animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              <>
+                <Trash2 className="w-4 h-4" />
+                Delete Permanently
+              </>
+            )}
           </button>
         </div>
       </div>

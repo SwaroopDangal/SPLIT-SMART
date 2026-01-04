@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 const useDeleteGroup = (id) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { mutate: deleteGroupMutation } = useMutation({
+  const { mutate: deleteGroupMutation ,isPending: isDeleteGroupPending } = useMutation({
     mutationKey: ["delete-group", id],
     mutationFn: () => deleteGroup(id),
     onSuccess: (data) => {
@@ -20,7 +20,7 @@ const useDeleteGroup = (id) => {
     },
     onError: (error) => toast.error(error.response.data.message),
   });
-  return { deleteGroupMutation };
+  return { deleteGroupMutation, isDeleteGroupPending };
 };
 
 export default useDeleteGroup;
