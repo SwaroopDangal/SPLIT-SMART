@@ -3,11 +3,11 @@ import { Wallet, CheckCircle, TrendingUp, TrendingDown } from "lucide-react";
 
 const PrintableSummary = forwardRef(({ groupBalance }, ref) => {
   return (
-    <div ref={ref} className="bg-white text-black p-6 max-w-4xl mx-auto">
+    <div ref={ref} className="bg-white text-black p-6 pt-16 max-w-4xl mx-auto">
       {/* Compact Header */}
       <div className="border-b-2 border-emerald-600 pb-3 mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="bg-gradient-to-br from-emerald-600 to-teal-600 p-2 rounded-lg">
+          <div className="bg-linear-to-br from-emerald-600 to-teal-600 p-2 rounded-lg">
             <Wallet className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -29,12 +29,12 @@ const PrintableSummary = forwardRef(({ groupBalance }, ref) => {
       </div>
 
       {/* Compact Total */}
-      <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg p-3 mb-4 text-center">
+      <div className="bg-linear-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg p-3 mb-4 text-center">
         <p className="text-xs font-semibold text-emerald-700 uppercase">
           Total Expenses
         </p>
         <p className="text-3xl font-bold text-emerald-800">
-          ₹
+          $
           {groupBalance.totalExpenses.toLocaleString("en-IN", {
             minimumFractionDigits: 2,
           })}
@@ -89,10 +89,10 @@ const PrintableSummary = forwardRef(({ groupBalance }, ref) => {
                     </div>
                   </td>
                   <td className="px-3 py-2 text-right text-xs">
-                    ₹{m.totalPaid.toFixed(2)}
+                    ${m.totalPaid.toFixed(2)}
                   </td>
                   <td className="px-3 py-2 text-right text-xs">
-                    ₹{m.totalOwed.toFixed(2)}
+                    ${m.totalOwed.toFixed(2)}
                   </td>
                   <td className="px-3 py-2 text-right">
                     <span
@@ -104,7 +104,7 @@ const PrintableSummary = forwardRef(({ groupBalance }, ref) => {
                           : "text-gray-600"
                       }`}
                     >
-                      {m.balance > 0 ? "+" : ""}₹{m.balance.toFixed(2)}
+                      {m.balance > 0 ? "+" : ""}${m.balance.toFixed(2)}
                     </span>
                   </td>
                   <td className="px-3 py-2 text-center">
@@ -153,7 +153,7 @@ const PrintableSummary = forwardRef(({ groupBalance }, ref) => {
                     <strong>{s.from}</strong> → <strong>{s.to}</strong>
                   </span>
                   <span className="font-bold text-emerald-700">
-                    ₹{s.amount.toFixed(2)}
+                    ${s.amount.toFixed(2)}
                   </span>
                 </div>
               ))}
@@ -167,7 +167,7 @@ const PrintableSummary = forwardRef(({ groupBalance }, ref) => {
         <div className="bg-green-50 border border-green-200 rounded-lg p-2">
           <p className="text-xs font-semibold text-green-700">To Receive</p>
           <p className="text-lg font-bold text-green-700">
-            ₹
+            $
             {groupBalance.members
               .filter((m) => m.status === "owed")
               .reduce((sum, m) => sum + m.balance, 0)
@@ -177,7 +177,7 @@ const PrintableSummary = forwardRef(({ groupBalance }, ref) => {
         <div className="bg-red-50 border border-red-200 rounded-lg p-2">
           <p className="text-xs font-semibold text-red-700">Outstanding</p>
           <p className="text-lg font-bold text-red-700">
-            ₹
+            $
             {groupBalance.members
               .filter((m) => m.status === "owes")
               .reduce((sum, m) => sum + Math.abs(m.balance), 0)

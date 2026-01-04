@@ -88,7 +88,7 @@ const GroupDetails = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-emerald-600 to-teal-600 shadow-lg">
+      <div className="bg-linear-to-r from-emerald-600 to-teal-600 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             {/* Left: Group Info */}
