@@ -48,7 +48,7 @@ export default function Sidebar() {
             setActiveSection("dashboard");
             navigate("/dashboard");
           }}
-          className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
+          className={`w-full flex items-center space-x-3 cursor-pointer px-4 py-3 rounded-lg transition-all ${
             activeSection === "dashboard"
               ? "bg-emerald-600 text-white shadow-md"
               : "hover:bg-base-300 text-base-content"
@@ -102,7 +102,7 @@ export default function Sidebar() {
                   setActiveSection(`group-${group._id}`);
                   navigate(`/group/${group._id}`);
                 }}
-                className={`w-full flex items-center justify-between px-3 py-3 rounded-lg transition-all ${
+                className={`w-full flex items-center cursor-pointer justify-between px-3 py-3 rounded-lg transition-all ${
                   activeSection === `group-${group._id}`
                     ? "bg-emerald-50 border-2 border-emerald-600"
                     : "hover:bg-base-300 border-2 border-transparent"
@@ -161,7 +161,7 @@ export default function Sidebar() {
         {/* Create New Group */}
         <button
           type="button"
-          className="w-full mt-4 flex items-center justify-center space-x-2 px-4 py-3 rounded-lg border-2 border-dashed border-base-300 hover:border-emerald-600 hover:bg-emerald-50 transition-all text-base-content/60 hover:text-emerald-600"
+          className="w-full mt-4 cursor-pointer flex items-center justify-center space-x-2 px-4 py-3 rounded-lg border-2 border-dashed border-base-300 hover:border-emerald-600 hover:bg-emerald-50 transition-all text-base-content/60 hover:text-emerald-600"
           onClick={() => navigate("/group/new")}
         >
           <Plus className="w-4 h-4" />

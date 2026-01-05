@@ -1,15 +1,20 @@
 import { Wallet } from "lucide-react";
 import { UserButton, useUser, SignInButton } from "@clerk/clerk-react";
-
+import { Navigate, useNavigate } from "react-router";
+import { use } from "react";
 export default function Navbar() {
   const { isSignedIn } = useUser();
+  const navigate = useNavigate();
 
   return (
-    <nav className="bg-gradient-to-r from-emerald-600 to-teal-600 shadow-lg">
+    <nav className="bg-linear-to-r from-emerald-600 to-teal-600 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo and Brand */}
-          <div className="flex items-center space-x-3">
+          <div
+            className="flex items-center space-x-3 cursor-pointer"
+            onClick={() => navigate("/dashboard")}
+          >
             <div className="bg-white p-2 rounded-lg shadow-md">
               <Wallet className="w-6 h-6 text-emerald-600" />
             </div>
