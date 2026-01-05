@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import useGetStats from "../hooks/useGetStats";
 import LoaderPage from "../components/Loader";
+import RecentActivity from "../components/RecentActivity";
 
 const Dashboard = () => {
   const { isSignedIn, user } = useUser();
@@ -113,12 +114,7 @@ const Dashboard = () => {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">
-          Recent Activity
-        </h2>
-        <p className="text-gray-500 text-center py-6">No recent activity yet</p>
-      </div>
+      <RecentActivity />
     </div>
   );
 };

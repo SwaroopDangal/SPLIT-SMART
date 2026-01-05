@@ -49,8 +49,8 @@ export const getAllExpensesOfAGroup = async (id) => {
   const response = await axiosInstance.get(`/expense/${id}`);
   return response.data;
 };
-export const deleteExpense = async (id) => {
-  const response = await axiosInstance.delete(`/expense/${id}`);
+export const deleteExpense = async (id, groupId) => {
+  const response = await axiosInstance.delete(`/expense/${groupId}/${id}`);
   return response.data;
 };
 export const getStats = async () => {
@@ -63,5 +63,9 @@ export const getGroupExpensesAndSettlements = async (id) => {
 };
 export const settleAllExpensesOfAGroup = async (id) => {
   const response = await axiosInstance.delete(`/expense/${id}/settle`);
+  return response.data;
+};
+export const getUserRecentActivities = async () => {
+  const response = await axiosInstance.get("/recentActivity/recentActivities");
   return response.data;
 };

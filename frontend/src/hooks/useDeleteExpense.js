@@ -8,7 +8,7 @@ const useDeleteExpense = ({ id, groupId }) => {
   const { mutate: deleteExpenseMutation, isPending: isDeleteExpensePending } =
     useMutation({
       mutationKey: ["delete-expense", id],
-      mutationFn: () => deleteExpense(id),
+      mutationFn: () => deleteExpense(id, groupId),
       onSuccess: (data) => {
         toast.success(data.message);
         queryClient.invalidateQueries({
