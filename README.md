@@ -4,7 +4,7 @@
 
 A modern, full-stack expense splitting application built with the MERN stack that helps groups manage shared expenses effortlessly.
 
-![Alt text](image.png)
+
 
 ## ✨ Features
 
@@ -137,27 +137,6 @@ npm start
 2. Review the formatted report
 3. Print or save as PDF
 
-## 📱 Screenshots
-
-### Landing Page
-
-![Landing Page](image-1.png)
-
-### Dashboard
-
-![Dashboard](image-2.png)
-
-### Group Details
-
-![Group Details](image-4.png)
-
-### Add Expense Modal
-
-![Add Expense](image-3.png)
-
-### Printale Balance Summary
-
-![Balance Summary](image-5.png)
 
 ## 🏗️ Project Structure
 
