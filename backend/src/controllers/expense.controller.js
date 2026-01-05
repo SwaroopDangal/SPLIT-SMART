@@ -15,6 +15,13 @@ export const addExpense = async (req, res) => {
       splitAmong,
       createdBy: clerkId,
     });
+    await logActivity({
+      groupId,
+      userId: req.user._id,
+      type: "EXPENSE_ADDED",
+      message: `${req.user.name} added "${description}" – $${amount}`,
+      meta: { expenseId: expense._id },
+    });
 
     return res.status(201).json(expense);
   } catch (error) {
@@ -60,6 +67,13 @@ export const deleteExpense = async (req, res) => {
       return res.status(403).json({ message: "You are not the creator" });
     }
 
+    await logActivity({
+      groupId,
+      userId: req.user._id,
+      type: "EXPENSE_DELETED",
+      message: `${req.user.name} deleted "${expense.description}"`,
+    });
+
     await Expense.findByIdAndDelete(expenseId);
 
     return res.status(200).json({ message: "Expense deleted" });
@@ -83,6 +97,13 @@ export const settleAllExpensesOfAGroup = async (req, res) => {
     }
 
     await Expense.deleteMany({ groupId });
+
+    await logActivity({
+      groupId,
+      userId: req.user._id,
+      type: "GROUP_SETTLED",
+      message: "Admin settled all expenses. Balances cleared.",
+    });
 
     return res.status(200).json({ message: "All expenses settled" });
   } catch (error) {
