@@ -61,3 +61,7 @@ export const getGroupExpensesAndSettlements = async (id) => {
   const response = await axiosInstance.get(`/group/${id}/expenses`);
   return response.data;
 };
+export const settleAllExpensesOfAGroup = async (id) => {
+  const response = await axiosInstance.delete(`/expense/${id}/settle`);
+  return response.data;
+};

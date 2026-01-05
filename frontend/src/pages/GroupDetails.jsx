@@ -25,6 +25,7 @@ import DeleteExpenseModal from "../components/DeleteExpenseModal";
 import GroupBalanceModal from "../components/GroupBAlanceModal";
 import PrintableSummary from "../components/PrintableSummary";
 import useGetGroupExpensesAndSettlements from "../hooks/useGetGroupExpensesAndSettlements";
+import toast from "react-hot-toast";
 
 const GroupDetails = () => {
   const [showInviteLinkModal, setShowInviteLinkModal] = useState(false);
@@ -70,6 +71,21 @@ const GroupDetails = () => {
     contentRef: printRef,
     documentTitle: `${groupBalance?.groupName}-summary`,
   });
+
+  const handleDeleteGroup = () => {
+    if (groupExpenseData.length > 0) {
+      toast.error("First delete or settle all expenses");
+      return;
+    }
+    setShowDeleteGroupModal(true);
+  };
+  const handleViewBalance = () => {
+    if (groupExpenseData.length === 0) {
+      toast.error("First add an expense");
+      return;
+    }
+    setShowBalanceModal(true);
+  };
 
   if (!isSignedIn) return <Navigate to="/" />;
 
@@ -130,10 +146,7 @@ const GroupDetails = () => {
           {/* View Balance Button - Available to all */}
           <button
             className="btn btn-outline border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-600 flex items-center justify-center gap-2"
-            onClick={() => {
-              /* Add your view balance logic */
-              setShowBalanceModal(true);
-            }}
+            onClick={handleViewBalance}
           >
             <Scale className="w-4 h-4" />
             View Balance
@@ -143,7 +156,7 @@ const GroupDetails = () => {
           <button
             className="btn btn-outline border-2 border-purple-500 text-purple-600 hover:bg-purple-50 hover:border-purple-600 flex items-center justify-center gap-2"
             onClick={handlePrint}
-            disabled={isGroupBalnceLoading || !groupBalance}
+            disabled={isGroupBalnceLoading || !groupBalance || groupExpenseData.length === 0}
           >
             <FileText className="w-4 h-4" />
             Print Summary
@@ -161,7 +174,7 @@ const GroupDetails = () => {
               </button>
               <button
                 className="btn btn-outline border-2 border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600 flex items-center justify-center gap-2"
-                onClick={() => setShowDeleteGroupModal(true)}
+                onClick={handleDeleteGroup}
               >
                 <Trash2 className="w-4 h-4" />
                 Delete Group
@@ -274,6 +287,7 @@ const GroupDetails = () => {
       )}
       {/* Group Balance Modal */}
       <GroupBalanceModal
+        isAdmin={isAdmin}
         showModal={showBalanceModal}
         setShowModal={setShowBalanceModal}
         id={id}

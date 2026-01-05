@@ -68,3 +68,25 @@ export const deleteExpense = async (req, res) => {
     return res.status(500).json({ message: "Error deleting expense" });
   }
 };
+
+export const settleAllExpensesOfAGroup = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const groupId = req.params.id;
+
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+    if (!group.members.some((memberId) => memberId.equals(userId))) {
+      return res.status(403).json({ message: "You are not part of group" });
+    }
+
+    await Expense.deleteMany({ groupId });
+
+    return res.status(200).json({ message: "All expenses settled" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error deleting expense" });
+  }
+};

@@ -6,81 +6,44 @@ import {
   TrendingDown,
   Users,
   Receipt,
+  Loader,
 } from "lucide-react";
 import useGetGroupExpensesAndSettlements from "../hooks/useGetGroupExpensesAndSettlements";
+import LoaderPage from "./Loader";
+import useSettleAllExpensesOfAGroup from "../hooks/useSettleAllExpensesOfAGroup";
+import ConfirmSettleModal from "./ConfirmSettleModal ";
 
-const GroupBalanceModal = ({ showModal, setShowModal, id }) => {
-  // Dummy data - replace with real data
-  const groupBalance = {
-    groupName: "NYC Trip",
-    totalExpenses: 1250.0,
-    members: [
-      {
-        id: 1,
-        name: "John Doe",
-        avatar:
-          "https://ui-avatars.com/api/?name=John+Doe&background=10b981&color=fff",
-        totalPaid: 450.0,
-        totalOwed: 312.5,
-        balance: 137.5, // positive means they are owed
-        status: "owed", // "owed" or "owes"
-      },
-      {
-        id: 2,
-        name: "Sarah Smith",
-        avatar:
-          "https://ui-avatars.com/api/?name=Sarah+Smith&background=3b82f6&color=fff",
-        totalPaid: 200.0,
-        totalOwed: 312.5,
-        balance: -112.5, // negative means they owe
-        status: "owes",
-      },
-      {
-        id: 3,
-        name: "Mike Johnson",
-        avatar:
-          "https://ui-avatars.com/api/?name=Mike+Johnson&background=f59e0b&color=fff",
-        totalPaid: 350.0,
-        totalOwed: 312.5,
-        balance: 37.5,
-        status: "owed",
-      },
-      {
-        id: 4,
-        name: "Emily Brown",
-        avatar:
-          "https://ui-avatars.com/api/?name=Emily+Brown&background=8b5cf6&color=fff",
-        totalPaid: 250.0,
-        totalOwed: 312.5,
-        balance: -62.5,
-        status: "owes",
-      },
-    ],
-    settlements: [
-      { from: "Sarah Smith", to: "John Doe", amount: 112.5 },
-      { from: "Emily Brown", to: "John Doe", amount: 25.0 },
-      { from: "Emily Brown", to: "Mike Johnson", amount: 37.5 },
-    ],
-  };
-
+const GroupBalanceModal = ({ showModal, setShowModal, id, isAdmin }) => {
+  const [showConfirmSettleModal, setShowConfirmSettleModal] = useState(false);
   const { groupBalanceData, isGroupBalnceLoading } =
     useGetGroupExpensesAndSettlements(id);
   console.log(groupBalanceData);
 
+  const { settleExpensesMutation, isSettleExpensesPending } =
+    useSettleAllExpensesOfAGroup(id);
+
+  const handleSettle = () => {
+    settleExpensesMutation();
+    setShowModal(false);
+  };
+
   if (!showModal) return null;
+  if (isGroupBalnceLoading) return <LoaderPage />;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 ">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto ">
         {/* Modal Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-6 rounded-t-2xl">
+        <div className="sticky top-0 bg-linear-to-r from-emerald-600 to-teal-600 text-white p-6 rounded-t-2xl">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
                 <Receipt className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold">{groupBalanceData.groupName}</h2>
+                <h2 className="text-2xl font-bold">
+                  {groupBalanceData?.groupName}
+                </h2>
                 <p className="text-emerald-100 text-sm">
                   Group Balance Summary
                 </p>
@@ -201,8 +164,8 @@ const GroupBalanceModal = ({ showModal, setShowModal, id }) => {
 
             <div className="bg-blue-50 rounded-xl p-4 border-2 border-blue-200">
               <p className="text-sm text-blue-800 mb-4 font-medium">
-                💡 Settle balances with these {groupBalanceData.settlements.length}{" "}
-                transactions:
+                💡 Settle balances with these{" "}
+                {groupBalanceData.settlements.length} transactions:
               </p>
 
               <div className="space-y-3">
@@ -278,12 +241,24 @@ const GroupBalanceModal = ({ showModal, setShowModal, id }) => {
           >
             Close
           </button>
-          <button className="btn bg-emerald-600 hover:bg-emerald-700 text-white flex-1">
-            <DollarSign className="w-4 h-4" />
-            Record Settlement
-          </button>
+          {isAdmin && (
+            <button
+              className="btn bg-emerald-600 hover:bg-emerald-700 text-white flex-1"
+              onClick={() => setShowConfirmSettleModal(true)}
+            >
+              <DollarSign className="w-4 h-4" />
+              Record Settlement
+            </button>
+          )}
         </div>
       </div>
+      {/* Confirm Settlement Modal */}
+      <ConfirmSettleModal
+        showModal={showConfirmSettleModal}
+        setShowModal={setShowConfirmSettleModal}
+        onConfirm={handleSettle}
+        settlementsCount={groupBalanceData.settlements.length}
+      />
     </div>
   );
 };
