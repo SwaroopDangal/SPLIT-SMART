@@ -15,3 +15,7 @@
     page-break-inside: avoid;
   }
 }
+
+@theme {
+  --color-scheme: light;
+}
