@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.post("/", protectRoute, addExpense);
 router.get("/:id", protectRoute, getAllExpensesOfAGroup);
-router.delete("/:id", protectRoute, deleteExpense);
+router.delete("/:groupId/:id", protectRoute, deleteExpense);
 router.delete("/:id/settle", protectRoute, settleAllExpensesOfAGroup);
 
 export default router;

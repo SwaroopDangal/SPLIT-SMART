@@ -1,6 +1,6 @@
 import Expense from "../models/Expense.js";
 import Group from "../models/Group.js";
-
+import { logActivity } from "../lib/logActivity.js";
 export const addExpense = async (req, res) => {
   try {
     const { description, amount, date, paidBy, splitAmong, groupId } = req.body;
@@ -57,6 +57,7 @@ export const getAllExpensesOfAGroup = async (req, res) => {
 export const deleteExpense = async (req, res) => {
   try {
     const expenseId = req.params.id;
+    const groupId = req.params.groupId;
     const userId = req.user.clerkId;
 
     const expense = await Expense.findById(expenseId);
