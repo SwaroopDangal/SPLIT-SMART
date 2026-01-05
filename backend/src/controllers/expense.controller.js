@@ -87,17 +87,21 @@ export const deleteExpense = async (req, res) => {
 export const settleAllExpensesOfAGroup = async (req, res) => {
   try {
     const userId = req.user._id;
-    const groupId = req.params.id;
+    const { groupId } = req.params;
 
     const group = await Group.findById(groupId);
     if (!group) {
       return res.status(404).json({ message: "Group not found" });
     }
+    if (!group.admin.equals(userId)) {
+      return res
+        .status(403)
+        .json({ message: "Only admin can settle expenses" });
+    }
+
     if (!group.members.some((memberId) => memberId.equals(userId))) {
       return res.status(403).json({ message: "You are not part of group" });
     }
-
-    await Expense.deleteMany({ groupId });
 
     await logActivity({
       groupId,
@@ -105,6 +109,7 @@ export const settleAllExpensesOfAGroup = async (req, res) => {
       type: "GROUP_SETTLED",
       message: "Admin settled all expenses. Balances cleared.",
     });
+    await Expense.deleteMany({ groupId });
 
     return res.status(200).json({ message: "All expenses settled" });
   } catch (error) {
